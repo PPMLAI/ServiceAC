@@ -42,7 +42,7 @@
         <div class="max-w-7xl mx-auto px-4 flex space-x-2 sm:space-x-6 overflow-x-auto">
             <button onclick="switchTab('jadwal')" id="btn-jadwal" class="nav-btn flex items-center space-x-3 py-4 px-4 border-b-2 font-semibold text-sm transition-all border-blue-600 text-blue-600 whitespace-nowrap">
                 <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <i class="fa-solid fa-clock-rotate-left text-blue-500"></i>
                 </div>
                 <div class="text-left">
                     <div>Jadwal Cuci AC</div>
@@ -52,7 +52,7 @@
 
             <button onclick="switchTab('selesai')" id="btn-selesai" class="nav-btn flex items-center space-x-3 py-4 px-4 border-b-2 font-semibold text-sm transition-all border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
                 <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-circle-check"></i>
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
                 </div>
                 <div class="text-left">
                     <div>Sudah Dilakukan Pencucian</div>
@@ -62,7 +62,7 @@
             
             <button onclick="switchTab('stat')" id="btn-stat" class="nav-btn flex items-center space-x-3 py-4 px-4 border-b-2 font-semibold text-sm transition-all border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
                 <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-chart-pie"></i>
+                    <i class="fa-solid fa-chart-pie text-amber-500"></i>
                 </div>
                 <div class="text-left">
                     <div>Ringkasan & Statistik</div>
@@ -80,7 +80,7 @@
             <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row justify-between items-center">
                 <div class="space-y-2 mb-4 md:mb-0">
                     <div class="inline-flex items-center space-x-2 bg-blue-800/80 px-3 py-1 rounded-full text-xs font-medium text-cyan-300 border border-blue-700">
-                        <i class="fa-solid fa-shield-halved"></i>
+                        <i class="fa-solid fa-shield-halved text-cyan-400"></i>
                         <span>Siklus Rutin: 6 Bulan Sekali</span>
                     </div>
                     <h2 class="text-xl font-bold">Daftar Estimasi Tanggal Pencucian AC</h2>
@@ -98,12 +98,12 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between gap-4 items-center">
                 <div class="relative w-full md:w-96">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i class="fa-solid fa-magnifying-glass text-indigo-500"></i>
                     </span>
                     <input type="text" id="search-jadwal" onkeyup="filterJadwal()" placeholder="Cari Kode Aset atau Lokasi (Contoh: Aula, Server)..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
-                    <span class="text-xs text-slate-500 font-medium">Filter Status:</span>
+                    <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5"><i class="fa-solid fa-filter text-blue-500"></i> Filter Status:</span>
                     <select id="filter-status" onchange="filterJadwal()" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="all">Semua Status</option>
                         <option value="due">Perlu Dicuci (Segera)</option>
@@ -119,12 +119,12 @@
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
                                 <th class="py-3 px-4 font-semibold">No</th>
-                                <th class="py-3 px-4 font-semibold">Kode Asset</th>
-                                <th class="py-3 px-4 font-semibold">Jenis / Tipe</th>
-                                <th class="py-3 px-4 font-semibold">Lokasi / User</th>
-                                <th class="py-3 px-4 font-semibold">Pencucian Terakhir</th>
-                                <th class="py-3 px-4 font-semibold">Estimasi Cuci Berikutnya (6 Bulan)</th>
-                                <th class="py-3 px-4 font-semibold text-center">Status Aksi</th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-barcode text-blue-500"></i> Kode Asset</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-tag text-indigo-500"></i> Jenis / Tipe</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> Lokasi / User</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-calendar-check text-emerald-500"></i> Pencucian Terakhir</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Estimasi Cuci Berikutnya (6 Bulan)</span></th>
+                                <th class="py-3 px-4 font-semibold text-center"><span class="inline-flex items-center gap-1 justify-center"><i class="fa-solid fa-sliders text-violet-500"></i> Status Aksi</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-sm" id="tbody-jadwal">
@@ -140,14 +140,14 @@
             <div class="bg-gradient-to-r from-emerald-900 to-teal-900 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row justify-between items-center">
                 <div class="space-y-2 mb-4 md:mb-0">
                     <div class="inline-flex items-center space-x-2 bg-emerald-800/80 px-3 py-1 rounded-full text-xs font-medium text-emerald-300 border border-emerald-700">
-                        <i class="fa-solid fa-user-gear"></i>
+                        <i class="fa-solid fa-user-gear text-teal-300"></i>
                         <span>Tim Teknisi Pemeliharaan LAI</span>
                     </div>
                     <h2 class="text-xl font-bold">Riwayat Unit AC yang Sudah Dicuci</h2>
                     <p class="text-sm text-emerald-100 max-w-2xl">Catatan lengkap hari, tanggal, serta nama teknisi LAI yang bertugas melakukan pencucian dan servis berkala pada unit AC Gedung Percetakan LAI.</p>
                 </div>
                 <button onclick="openModalTambah()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 text-sm">
-                    <i class="fa-solid fa-plus"></i>
+                    <i class="fa-solid fa-plus text-emerald-200"></i>
                     <span>Catat Pencucian Baru</span>
                 </button>
             </div>
@@ -156,12 +156,12 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between gap-4 items-center">
                 <div class="relative w-full md:w-96">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i class="fa-solid fa-magnifying-glass text-emerald-500"></i>
                     </span>
                     <input type="text" id="search-selesai" onkeyup="filterSelesai()" placeholder="Cari Teknisi, Lokasi, atau Kode Aset..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
-                <div class="text-xs text-slate-500">
-                    Menampilkan riwayat pencucian aktual oleh Teknisi LAI
+                <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info text-teal-500"></i> Menampilkan riwayat pencucian aktual oleh Teknisi LAI
                 </div>
             </div>
 
@@ -172,12 +172,12 @@
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
                                 <th class="py-3 px-4 font-semibold">No</th>
-                                <th class="py-3 px-4 font-semibold">Kode Asset</th>
-                                <th class="py-3 px-4 font-semibold">Lokasi / Ruangan</th>
-                                <th class="py-3 px-4 font-semibold">Hari & Tanggal Cuci</th>
-                                <th class="py-3 px-4 font-semibold">Teknisi LAI yang Bertugas</th>
-                                <th class="py-3 px-4 font-semibold">Catatan Kondisi</th>
-                                <th class="py-3 px-4 font-semibold text-center">Siklus Berikutnya</th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-barcode text-emerald-500"></i> Kode Asset</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> Lokasi / Ruangan</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-calendar-day text-blue-500"></i> Hari & Tanggal Cuci</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-user-tie text-purple-500"></i> Teknisi LAI yang Bertugas</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-clipboard-list text-amber-500"></i> Catatan Kondisi</span></th>
+                                <th class="py-3 px-4 font-semibold text-center"><span class="inline-flex items-center gap-1 justify-center"><i class="fa-solid fa-rotate text-teal-500"></i> Siklus Berikutnya</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-sm" id="tbody-selesai">
@@ -193,34 +193,34 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
                     <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-building"></i>
+                        <i class="fa-solid fa-building text-blue-600"></i>
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-semibold uppercase">Total Unit AC Percetakan</div>
                         <div class="text-2xl font-bold text-slate-800" id="stat-total">0 Unit</div>
-                        <div class="text-xs text-blue-600 mt-1"><i class="fa-solid fa-check"></i> Gedung Percetakan LAI</div>
+                        <div class="text-xs text-blue-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-check-circle text-blue-500"></i> Gedung Percetakan LAI</div>
                     </div>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
                     <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-circle-check"></i>
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-semibold uppercase">Sudah Dicuci (Periode Ini)</div>
                         <div class="text-2xl font-bold text-slate-800" id="stat-selesai">0 Unit</div>
-                        <div class="text-xs text-emerald-600 mt-1">Dirawat oleh Teknisi LAI</div>
+                        <div class="text-xs text-emerald-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-wrench text-emerald-500"></i> Dirawat oleh Teknisi LAI</div>
                     </div>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
                     <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-clock"></i>
+                        <i class="fa-solid fa-clock text-amber-600"></i>
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-semibold uppercase">Mendekati Jadwal Cuci</div>
                         <div class="text-2xl font-bold text-slate-800" id="stat-pending">0 Unit</div>
-                        <div class="text-xs text-amber-600 mt-1">Durasi 6 Bulan</div>
+                        <div class="text-xs text-amber-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-hourglass-half text-amber-500"></i> Durasi 6 Bulan</div>
                     </div>
                 </div>
             </div>
@@ -256,33 +256,33 @@
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border border-slate-100 animate-in fade-in zoom-in duration-200">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-4 text-white flex justify-between items-center">
                 <h3 class="font-bold text-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-file-pen"></i>
+                    <i class="fa-solid fa-file-pen text-emerald-200"></i>
                     <span>Catat Pencucian AC Baru</span>
                 </h3>
                 <button onclick="closeModalTambah()" class="text-emerald-100 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="form-pencucian" onsubmit="submitPencucian(event)" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih Unit AC (Kode Asset & Lokasi)</label>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-snowflake text-blue-500"></i> Pilih Unit AC (Kode Asset & Lokasi)</label>
                     <select id="input-ac-select" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                         <!-- Populated by JS -->
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Hari & Tanggal Pencucian</label>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-calendar-day text-emerald-500"></i> Hari & Tanggal Pencucian</label>
                     <input type="date" id="input-tanggal" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nama Teknisi LAI</label>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-user-gear text-purple-500"></i> Nama Teknisi LAI</label>
                     <input type="text" id="input-teknisi" placeholder="Contoh: Budi Santoso / Tim Teknisi 1" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Catatan Kondisi AC</label>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-comment-dots text-amber-500"></i> Catatan Kondisi AC</label>
                     <textarea id="input-catatan" rows="3" placeholder="Contoh: Filter bersih, freon normal, evaporator dicuci bersih." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeModalTambah()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-medium">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-md">Simpan Data</button>
+                    <button type="button" onclick="closeModalTambah()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-medium flex items-center gap-1"><i class="fa-solid fa-ban text-rose-500"></i> Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-md flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk text-emerald-200"></i> Simpan Data</button>
                 </div>
             </form>
         </div>
@@ -290,8 +290,8 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            &copy; 2026 Lembaga Alkitab Indonesia (LAI) - Nanggewer, Bogor. Gedung Percetakan. All rights reserved.
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
+            <i class="fa-regular fa-copyright text-slate-400"></i> 2026 Lembaga Alkitab Indonesia (LAI) - Nanggewer, Bogor. Gedung Percetakan. All rights reserved.
         </div>
     </footer>
 
@@ -391,11 +391,11 @@
                 
                 let statusBadge = '';
                 if (diffDays <= 0) {
-                    statusBadge = `<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-triangle-exclamation"></i><span>Lewat Jadwal</span></span>`;
+                    statusBadge = `<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-triangle-exclamation text-red-500"></i><span>Lewat Jadwal</span></span>`;
                 } else if (diffDays <= 30) {
-                    statusBadge = `<span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-clock"></i><span>Segera (${diffDays}h lagi)</span></span>`;
+                    statusBadge = `<span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-clock text-amber-500"></i><span>Segera (${diffDays}h lagi)</span></span>`;
                 } else {
-                    statusBadge = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-check"></i><span>Aman</span></span>`;
+                    statusBadge = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-check text-emerald-500"></i><span>Aman</span></span>`;
                 }
 
                 let row = `
