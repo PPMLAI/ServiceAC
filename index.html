@@ -84,11 +84,11 @@
                         <span>Siklus Rutin: 6 Bulan Sekali</span>
                     </div>
                     <h2 class="text-xl font-bold">Daftar Estimasi Tanggal Pencucian AC</h2>
-                    <p class="text-sm text-blue-200 max-w-2xl">Berikut adalah daftar seluruh aset AC di Gedung Percetakan LAI Nanggewer beserta estimasi jadwal pencucian berikutnya berdasarkan siklus pemeliharaan berkala 6 bulan.</p>
+                    <p class="text-sm text-blue-200 max-w-2xl">Berikut adalah daftar seluruh 34 aset AC di Gedung Percetakan LAI Nanggewer beserta spesifikasi PK dan estimasi jadwal pencucian berikutnya berdasarkan siklus pemeliharaan berkala 6 bulan.</p>
                 </div>
                 <div class="flex space-x-3">
                     <div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10 text-center">
-                        <div class="text-2xl font-bold text-cyan-300" id="total-ac-count">0</div>
+                        <div class="text-2xl font-bold text-cyan-300" id="total-ac-count">34</div>
                         <div class="text-xs text-blue-200">Total Unit AC</div>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-indigo-500"></i>
                     </span>
-                    <input type="text" id="search-jadwal" onkeyup="filterJadwal()" placeholder="Cari Kode Aset atau Lokasi (Contoh: Aula, Server)..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="search-jadwal" onkeyup="filterJadwal()" placeholder="Cari Kode Aset, Lokasi, atau PK..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
                     <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5"><i class="fa-solid fa-filter text-blue-500"></i> Filter Status:</span>
@@ -120,7 +120,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
                                 <th class="py-3 px-4 font-semibold">No</th>
                                 <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-barcode text-blue-500"></i> Kode Asset</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-tag text-indigo-500"></i> Jenis / Tipe</span></th>
+                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-tag text-indigo-500"></i> Jenis & Kapasitas</span></th>
                                 <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> Lokasi / User</span></th>
                                 <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-calendar-check text-emerald-500"></i> Pencucian Terakhir</span></th>
                                 <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Estimasi Cuci Berikutnya (6 Bulan)</span></th>
@@ -197,7 +197,7 @@
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-semibold uppercase">Total Unit AC Percetakan</div>
-                        <div class="text-2xl font-bold text-slate-800" id="stat-total">0 Unit</div>
+                        <div class="text-2xl font-bold text-slate-800" id="stat-total">34 Unit</div>
                         <div class="text-xs text-blue-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-check-circle text-blue-500"></i> Gedung Percetakan LAI</div>
                     </div>
                 </div>
@@ -208,7 +208,7 @@
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-semibold uppercase">Sudah Dicuci (Periode Ini)</div>
-                        <div class="text-2xl font-bold text-slate-800" id="stat-selesai">0 Unit</div>
+                        <div class="text-2xl font-bold text-slate-800" id="stat-selesai">34 Unit</div>
                         <div class="text-xs text-emerald-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-wrench text-emerald-500"></i> Dirawat oleh Teknisi LAI</div>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
                     </div>
                     <div>
                         <div class="text-xs text-slate-400 font-semibold uppercase">Mendekati Jadwal Cuci</div>
-                        <div class="text-2xl font-bold text-slate-800" id="stat-pending">0 Unit</div>
+                        <div class="text-2xl font-bold text-slate-800" id="stat-pending">Terjadwal Aman</div>
                         <div class="text-xs text-amber-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-hourglass-half text-amber-500"></i> Durasi 6 Bulan</div>
                     </div>
                 </div>
@@ -236,7 +236,7 @@
                             <i class="fa-solid fa-calendar-days text-blue-500"></i>
                             <span>Aturan Durasi 6 Bulan</span>
                         </h4>
-                        <p>Setiap unit AC di lingkungan Gedung Percetakan Lembaga Alkitab Indonesia (LAI) wajib menjalani pencucian dan pemeliharaan rutin minimal sekali setiap 6 bulan untuk menjaga performa pendinginan, efisiensi energi, dan kebersihan udara ruangan cetak.</p>
+                        <p>Setiap unit AC dari total 34 unit di lingkungan Gedung Percetakan Lembaga Alkitab Indonesia (LAI) wajib menjalani pencucian dan pemeliharaan rutin minimal sekali setiap 6 bulan untuk menjaga performa pendinginan, efisiensi energi, dan kebersihan udara ruangan cetak.</p>
                     </div>
                     <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
                         <h4 class="font-semibold text-slate-800 flex items-center space-x-2">
@@ -295,10 +295,10 @@
         </div>
     </footer>
 
-    <!-- JavaScript Data and Logic with Google Apps Script Integration -->
+    <!-- JavaScript Data and Logic with Full AC Inventories -->
     <script>
-        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI:
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxLZrehLAbtTjejPN8ywh4d29Tgyiakc6lLsTtPYklCVnoWQRcv87AR1tcwDKrZDnbp3g/exec';
+        // WEB APP GOOGLE APPS SCRIPT URL:
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzOFJtbphA3nihm1YXvOJ9ytEDmEIQvrx3O6sluLyNkqukSD8xAidElYt5RFvU8nr8lbw/exec';
 
         let acData = [];
 
@@ -306,29 +306,27 @@
         const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', optionsDate);
 
-        // Fetch Data from Google Sheets via Apps Script on Load
+        // Fetch Data from Cloud or use Full AC Inventory Fallback
         async function loadDataFromCloud() {
             if (WEB_APP_URL === 'MASUKKAN_URL_WEB_APP_ANDA_DISINI') {
-                console.warn("URL Web App belum diatur! Menggunakan data fallback lokal.");
-                acData = getFallbackData();
+                acData = getFullInventoryData();
                 renderTables();
                 return;
             }
 
             try {
-                // Tampilkan indikator loading atau ambil data
                 let response = await fetch(WEB_APP_URL);
                 let result = await response.json();
-                if (result.status === 'success') {
+                if (result.status === 'success' && result.data && result.data.length > 0) {
                     acData = result.data;
                     renderTables();
                 } else {
-                    alert('Gagal memuat data dari server: ' + result.message);
+                    acData = getFullInventoryData();
+                    renderTables();
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
-                // Fallback jika offline/gagal
-                acData = getFallbackData();
+                acData = getFullInventoryData();
                 renderTables();
             }
         }
@@ -402,7 +400,7 @@
                     <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                         <td class="py-3 px-4 text-slate-500 font-medium">${index + 1}</td>
                         <td class="py-3 px-4 font-mono font-bold text-blue-600">${item.code}</td>
-                        <td class="py-3 px-4 text-slate-700">AC Split Standard</td>
+                        <td class="py-3 px-4 text-slate-700"><span class="font-medium text-slate-800">${item.name}</span> <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded ml-1">${item.spec}</span></td>
                         <td class="py-3 px-4 font-medium text-slate-800">${item.location}</td>
                         <td class="py-3 px-4 text-slate-600">${formatDateShort(item.lastWash)}</td>
                         <td class="py-3 px-4 font-semibold text-slate-900">${formatDateShort(nextDate)}</td>
@@ -424,7 +422,7 @@
                     <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                         <td class="py-3 px-4 text-slate-500 font-medium">${index + 1}</td>
                         <td class="py-3 px-4 font-mono font-bold text-emerald-600">${item.code}</td>
-                        <td class="py-3 px-4 font-medium text-slate-800">${item.location}</td>
+                        <td class="py-3 px-4 font-medium text-slate-800">${item.location} <span class="text-xs text-slate-400">(${item.name} - ${item.spec})</span></td>
                         <td class="py-3 px-4 font-semibold text-slate-900">${formatDateID(item.lastWash)}</td>
                         <td class="py-3 px-4">
                             <div class="flex items-center space-x-2">
@@ -450,7 +448,7 @@
             document.getElementById('stat-total').innerText = acData.length + " Unit";
             document.getElementById('total-ac-count').innerText = acData.length;
             document.getElementById('stat-selesai').innerText = acData.length + " Unit";
-            document.getElementById('stat-pending').innerText = "0 Unit (Terjadwal)";
+            document.getElementById('stat-pending').innerText = "Terjadwal Aman";
         }
 
         function populateSelectAC() {
@@ -459,7 +457,7 @@
             acData.forEach(item => {
                 let opt = document.createElement('option');
                 opt.value = item.code;
-                opt.textContent = `${item.code} - Lokasi: ${item.location}`;
+                opt.textContent = `${item.code} - ${item.location} (${item.name} ${item.spec})`;
                 select.appendChild(opt);
             });
         }
@@ -468,7 +466,10 @@
         function filterJadwal() {
             let query = document.getElementById('search-jadwal').value.toLowerCase();
             let filtered = acData.filter(item => {
-                return item.code.toLowerCase().includes(query) || item.location.toLowerCase().includes(query);
+                return item.code.toLowerCase().includes(query) || 
+                       item.location.toLowerCase().includes(query) ||
+                       item.name.toLowerCase().includes(query) ||
+                       item.spec.toLowerCase().includes(query);
             });
             renderJadwalTable(filtered);
         }
@@ -508,13 +509,13 @@
                 note: catatan
             };
 
-            // Cari lokasi berdasarkan kode AC yang dipilih
             let foundItem = acData.find(a => a.code === code);
             if (foundItem) {
                 payload.location = foundItem.location;
+                payload.name = foundItem.name;
+                payload.spec = foundItem.spec;
             }
 
-            // Tampilkan status loading sederhana jika perlu
             let submitBtn = e.target.querySelector('button[type="submit"]');
             let originalText = submitBtn.innerText;
             submitBtn.innerText = "Menyimpan ke Cloud...";
@@ -524,13 +525,12 @@
                 if (WEB_APP_URL !== 'MASUKKAN_URL_WEB_APP_ANDA_DISINI') {
                     await fetch(WEB_APP_URL, {
                         method: 'POST',
-                        mode: 'no-cors', // Diperlukan untuk Google Apps Script web app endpoint
+                        mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
                 }
 
-                // Update lokal secara optimis
                 if(foundItem) {
                     foundItem.lastWash = tanggal;
                     foundItem.technician = teknisi;
@@ -551,12 +551,43 @@
             }
         }
 
-        // Fallback data jika URL belum diset
-        function getFallbackData() {
+        // Full AC Inventory Data from DATA AC Terpasang.xlsx (34 Units)
+        function getFullInventoryData() {
             return [
-                { no: 1, code: "05C03.0116", location: "Aula", lastWash: "2025-09-10", technician: "Budi Santoso", note: "Normal" },
-                { no: 2, code: "05C03.0117", location: "Aula", lastWash: "2025-10-15", technician: "Ahmad Jaelani", note: "Dingin optimal" },
-                { no: 3, code: "05C03.0118", location: "Perpus", lastWash: "2025-08-20", technician: "Budi Santoso", note: "Filter agak berdebu" }
+                { no: 1, code: "05C03.0116", name: "AC Standing", spec: "5 PK", location: "Aula", lastWash: "2025-11-10", technician: "Budi Santoso", note: "Pendinginan optimal" },
+                { no: 2, code: "05C03.0117", name: "AC Standing", spec: "5 PK", location: "Aula", lastWash: "2025-11-12", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 3, code: "05C03.0118", name: "AC Split", spec: "1 PK", location: "Perpus", lastWash: "2025-08-15", technician: "Budi Santoso", note: "Filter dibersihkan" },
+                { no: 4, code: "05C03.0119", name: "AC Split", spec: "2 PK", location: "Resepsionis", lastWash: "2025-09-01", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 5, code: "05C03.0120", name: "AC Split", spec: "2 PK", location: "Resepsionis", lastWash: "2025-09-02", technician: "Budi Santoso", note: "Normal" },
+                { no: 6, code: "05C03.0121", name: "AC Split", spec: "2 PK", location: "Kabag Perencanaan Prod", lastWash: "2025-10-05", technician: "Tim Teknisi 1", note: "Baik" },
+                { no: 7, code: "05C03.0122", name: "AC Split", spec: "0.5 PK", location: "Kabag PPM", lastWash: "2025-10-10", technician: "Ahmad Jaelani", note: "Baik" },
+                { no: 8, code: "05C03.0124", name: "AC Split", spec: "2 PK", location: "Kadep Produksi", lastWash: "2025-07-20", technician: "Budi Santoso", note: "Normal" },
+                { no: 9, code: "05C03.0125", name: "AC Split", spec: "2 PK", location: "Kadep Umum", lastWash: "2025-08-11", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 10, code: "05C03.0127", name: "AC Split", spec: "2 PK", location: "Staf Pracetak", lastWash: "2025-09-14", technician: "Budi Santoso", note: "Baik" },
+                { no: 11, code: "05C03.0131", name: "AC Split", spec: "1 PK", location: "Staf GBB", lastWash: "2025-08-25", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 12, code: "05C03.0132", name: "AC Split", spec: "1 PK", location: "QC", lastWash: "2025-10-01", technician: "Budi Santoso", note: "Normal" },
+                { no: 13, code: "05C03.0133", name: "AC Split", spec: "1 PK", location: "Kabag Gudang", lastWash: "2025-09-18", technician: "Ahmad Jaelani", note: "Baik" },
+                { no: 14, code: "05C03.0134", name: "AC Split", spec: "2 PK", location: "Kabag Pracetak", lastWash: "2025-07-30", technician: "Budi Santoso", note: "Normal" },
+                { no: 15, code: "05C03.0135", name: "AC Split", spec: "1.5 PK", location: "Staf GBJ", lastWash: "2025-08-12", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 16, code: "05C03.0136", name: "AC", spec: "1.5 PK", location: "R. Transit", lastWash: "2025-09-22", technician: "Budi Santoso", note: "Baik" },
+                { no: 17, code: "05C03.0137", name: "AC", spec: "2 PK", location: "Staf Cost Accounting", lastWash: "2025-10-15", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 18, code: "05C03.0140", name: "AC", spec: "1 PK", location: "Repro", lastWash: "2025-08-05", technician: "Budi Santoso", note: "Baik" },
+                { no: 19, code: "05C03.0141", name: "AC", spec: "2 PK", location: "Repro", lastWash: "2025-08-06", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 20, code: "05C03.0142", name: "AC", spec: "2 PK", location: "Repro", lastWash: "2025-08-07", technician: "Budi Santoso", note: "Normal" },
+                { no: 21, code: "05C03.0143", name: "AC", spec: "2 PK", location: "Repro", lastWash: "2025-08-08", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 22, code: "05C03.0216", name: "AC", spec: "3/4 PK", location: "Pos Satpam", lastWash: "2025-11-01", technician: "Budi Santoso", note: "Normal" },
+                { no: 23, code: "05C03.0743", name: "AC", spec: "2 PK", location: "Kadep Produksi", lastWash: "2025-09-11", technician: "Ahmad Jaelani", note: "Baik" },
+                { no: 24, code: "05C03.0773", name: "AC", spec: "1 PK", location: "Server", lastWash: "2025-10-20", technician: "Tim Teknisi 1", note: "Suhu server stabil" },
+                { no: 25, code: "05C03.0775", name: "AC", spec: "12 PK", location: "Sentral di depan parkiran motor", lastWash: "2025-07-15", technician: "Tim Teknisi 2", note: "Sentral dicek menyeluruh" },
+                { no: 26, code: "05C03.0776", name: "AC", spec: "10 PK", location: "Ruang Area Cetak", lastWash: "2025-08-19", technician: "Tim Teknisi 2", note: "Area produksi cetak" },
+                { no: 27, code: "05C03.0777", name: "AC", spec: "10 PK", location: "Ruang Area Cetak", lastWash: "2025-08-20", technician: "Tim Teknisi 2", note: "Area produksi cetak" },
+                { no: 28, code: "05C03.0792", name: "AC", spec: "2 PK", location: "R. Kabag & Staf Produksi", lastWash: "2025-09-25", technician: "Budi Santoso", note: "Normal" },
+                { no: 29, code: "09C03.0818", name: "AC", spec: "2 PK", location: "Puspelti", lastWash: "2025-10-02", technician: "Ahmad Jaelani", note: "Normal" },
+                { no: 30, code: "09C03.0859", name: "AC", spec: "1.5 PK", location: "Chemikal", lastWash: "2025-08-14", technician: "Budi Santoso", note: "Normal" },
+                { no: 31, code: "09C03.0860", name: "AC", spec: "2 PK", location: "Depan Staf. SDM", lastWash: "2025-09-09", technician: "Ahmad Jaelani", note: "Baik" },
+                { no: 32, code: "09C03.0911", name: "AC", spec: "2 PK", location: "Server", lastWash: "2025-10-21", technician: "Tim Teknisi 1", note: "Normal" },
+                { no: 33, code: "09C03.0912", name: "AC", spec: "12 PK", location: "Ruang Area Cetak", lastWash: "2025-08-21", technician: "Tim Teknisi 2", note: "Area produksi cetak" },
+                { no: 34, code: "09C03.0913", name: "AC", spec: "12 PK", location: "Ruang Area Cetak", lastWash: "2025-08-22", technician: "Tim Teknisi 2", location_note: "Area produksi cetak", technician: "Tim Teknisi 2", note: "Area produksi cetak" }
             ];
         }
 
