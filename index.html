@@ -3,131 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Maintenance AC - Gedung Percetakan LAI</title>
-    <!-- Tailwind CSS CDN for modern UI -->
+    <title>Aplikasi Jadwal Service AC - Gedung Percetakan LAI</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for modern colored icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
+<meta name="description" content="SIMAC LAI - Sistem Jadwal Service AC Gedung Percetakan LAI">
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Header / Navbar Top -->
-    <header class="bg-gradient-to-r from-blue-800 via-indigo-800 to-slate-900 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center space-x-4 mb-4 md:mb-0">
-                <div class="bg-white/10 p-3 rounded-xl backdrop-blur-md border border-white/20">
-                    <i class="fa-solid fa-snowflake text-cyan-400 text-3xl animate-pulse"></i>
+    <!-- Top Header -->
+    <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/20 shadow-inner flex items-center justify-center text-cyan-400 text-2xl">
+                    <i class="fa-solid fa-snowflake animate-spin" style="animation-duration: 8s;"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">SIMA-LAI</h1>
-                    <p class="text-xs text-blue-200">Sistem Informasi Maintenance AC • Gedung Percetakan LAI Nanggewer, Bogor</p>
+                    <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2">
+                        <span>SIMAC LAI</span>
+                        <span class="text-xs bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-full font-semibold">Gedung Percetakan</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-indigo-200">Sistem Informasi Jadwal & Pemeliharaan AC (Nanggewer, Bogor)</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-3 bg-white/10 px-4 py-2 rounded-lg border border-white/10 text-sm">
-                <i class="fa-solid fa-calendar-days text-amber-400"></i>
-                <span id="current-date" class="font-medium text-slate-100"></span>
+
+            <!-- Header Right: Database Status Indicator & Navbar -->
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <!-- Database Connection Status Badge -->
+                <div id="dbStatusBadge" class="flex items-center gap-2 bg-indigo-950/60 px-3 py-1.5 rounded-xl border border-indigo-700/50 text-xs">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span id="dbPingAnimation" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span id="dbPingDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                    </span>
+                    <span class="text-indigo-200">DB Status: <strong id="apiStatus" class="text-white">Menghubungkan...</strong></span>
+                </div>
+
+                <!-- Navbar Menu -->
+                <nav class="flex bg-indigo-950/60 p-1.5 rounded-2xl border border-indigo-700/50 shadow-inner overflow-x-auto max-w-full">
+                    <button onclick="switchTab('jadwal')" id="btn-jadwal" class="nav-btn flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-cyan-500 text-indigo-950 shadow-lg shadow-cyan-500/30">
+                        <i class="fa-solid fa-calendar-days text-base"></i>
+                        <span>Jadwal Cuci AC</span>
+                    </button>
+                    <button onclick="switchTab('sudah')" id="btn-sudah" class="nav-btn flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 text-indigo-200 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+                        <span>Sudah Dilakukan</span>
+                    </button>
+                    <button onclick="switchTab('statistik')" id="btn-statistik" class="nav-btn flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 text-indigo-200 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-chart-pie text-amber-400 text-base"></i>
+                        <span>Ringkasan Statistik</span>
+                    </button>
+                </nav>
             </div>
         </div>
     </header>
 
-    <!-- Main Navigation Bar (Tabs) -->
-    <nav class="bg-white shadow-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 flex space-x-2 sm:space-x-6 overflow-x-auto">
-            <button onclick="switchTab('jadwal')" id="btn-jadwal" class="nav-btn flex items-center space-x-3 py-4 px-4 border-b-2 font-semibold text-sm transition-all border-blue-600 text-blue-600 whitespace-nowrap">
-                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-clock-rotate-left text-blue-500"></i>
-                </div>
-                <div class="text-left">
-                    <div>Jadwal Cuci AC</div>
-                    <div class="text-[10px] text-slate-400 font-normal">Estimasi Siklus 6 Bulan</div>
-                </div>
-            </button>
-
-            <button onclick="switchTab('selesai')" id="btn-selesai" class="nav-btn flex items-center space-x-3 py-4 px-4 border-b-2 font-semibold text-sm transition-all border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
-                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                </div>
-                <div class="text-left">
-                    <div>Sudah Dilakukan Pencucian</div>
-                    <div class="text-[10px] text-slate-400 font-normal">Riwayat & Teknisi LAI</div>
-                </div>
-            </button>
-            
-            <button onclick="switchTab('stat')" id="btn-stat" class="nav-btn flex items-center space-x-3 py-4 px-4 border-b-2 font-semibold text-sm transition-all border-transparent text-slate-500 hover:text-slate-700 whitespace-nowrap">
-                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-chart-pie text-amber-500"></i>
-                </div>
-                <div class="text-left">
-                    <div>Ringkasan & Statistik</div>
-                    <div class="text-[10px] text-slate-400 font-normal">Dashboard Unit AC</div>
-                </div>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Content Body -->
-    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- TAB 1: JADWAL CUCI AC -->
         <div id="tab-jadwal" class="tab-content active space-y-6">
-            <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row justify-between items-center">
-                <div class="space-y-2 mb-4 md:mb-0">
-                    <div class="inline-flex items-center space-x-2 bg-blue-800/80 px-3 py-1 rounded-full text-xs font-medium text-cyan-300 border border-blue-700">
-                        <i class="fa-solid fa-shield-halved text-cyan-400"></i>
-                        <span>Siklus Rutin: 6 Bulan Sekali</span>
-                    </div>
-                    <h2 class="text-xl font-bold">Daftar Estimasi Tanggal Pencucian AC</h2>
-                    <p class="text-sm text-blue-200 max-w-2xl">Berikut adalah daftar seluruh 34 aset AC di Gedung Percetakan LAI Nanggewer beserta spesifikasi PK dan estimasi jadwal pencucian berikutnya berdasarkan siklus pemeliharaan berkala 6 bulan.</p>
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span class="p-2 bg-cyan-100 text-cyan-600 rounded-xl"><i class="fa-solid fa-list-check"></i></span>
+                        Daftar Jadwal Perawatan Berkala (6 Bulan Sekali)
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Total 34 unit AC Gedung Percetakan LAI Nanggewer, Bogor. Periode service otomatis setiap 6 bulan.</p>
                 </div>
-                <div class="flex space-x-3">
-                    <div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10 text-center">
-                        <div class="text-2xl font-bold text-cyan-300" id="total-ac-count">34</div>
-                        <div class="text-xs text-blue-200">Total Unit AC</div>
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                    <div class="relative flex-grow sm:flex-grow-0">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
+                        <input type="text" id="searchInputJadwal" onkeyup="filterJadwal()" placeholder="Cari kode, lokasi, PK..." class="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all">
                     </div>
+                    <button onclick="exportToCSV()" class="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-sm font-semibold shadow-md shadow-emerald-600/20 transition-all">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Export CSV</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Search & Filter Bar -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between gap-4 items-center">
-                <div class="relative w-full md:w-96">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass text-indigo-500"></i>
-                    </span>
-                    <input type="text" id="search-jadwal" onkeyup="filterJadwal()" placeholder="Cari Kode Aset, Lokasi, atau PK..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
-                    <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5"><i class="fa-solid fa-filter text-blue-500"></i> Filter Status:</span>
-                    <select id="filter-status" onchange="filterJadwal()" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="all">Semua Status</option>
-                        <option value="due">Perlu Dicuci (Segera)</option>
-                        <option value="safe">Terjadwal Aman</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Table Jadwal -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Table Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse" id="table-jadwal-ac">
+                    <table class="w-full text-left border-collapse" id="tableJadwal">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
-                                <th class="py-3 px-4 font-semibold">No</th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-barcode text-blue-500"></i> Kode Asset</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-tag text-indigo-500"></i> Jenis & Kapasitas</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> Lokasi / User</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-calendar-check text-emerald-500"></i> Pencucian Terakhir</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Estimasi Cuci Berikutnya (6 Bulan)</span></th>
-                                <th class="py-3 px-4 font-semibold text-center"><span class="inline-flex items-center gap-1 justify-center"><i class="fa-solid fa-sliders text-violet-500"></i> Status Aksi</span></th>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                                <th class="p-4 text-center">No</th>
+                                <th class="p-4">Kode Asset</th>
+                                <th class="p-4">Nama Asset</th>
+                                <th class="p-4">Spesifikasi</th>
+                                <th class="p-4">Lokasi / User</th>
+                                <th class="p-4">Terakhir Cuci</th>
+                                <th class="p-4">Jadwal Berikutnya</th>
+                                <th class="p-4 text-center">Status</th>
+                                <th class="p-4 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm" id="tbody-jadwal">
+                        <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-700" id="tbodyJadwal">
                             <!-- Populated by JS -->
                         </tbody>
                     </table>
@@ -136,51 +143,39 @@
         </div>
 
         <!-- TAB 2: SUDAH DILAKUKAN PENCUCIAN -->
-        <div id="tab-selesai" class="tab-content space-y-6">
-            <div class="bg-gradient-to-r from-emerald-900 to-teal-900 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row justify-between items-center">
-                <div class="space-y-2 mb-4 md:mb-0">
-                    <div class="inline-flex items-center space-x-2 bg-emerald-800/80 px-3 py-1 rounded-full text-xs font-medium text-emerald-300 border border-emerald-700">
-                        <i class="fa-solid fa-user-gear text-teal-300"></i>
-                        <span>Tim Teknisi Pemeliharaan LAI</span>
-                    </div>
-                    <h2 class="text-xl font-bold">Riwayat Unit AC yang Sudah Dicuci</h2>
-                    <p class="text-sm text-emerald-100 max-w-2xl">Catatan lengkap hari, tanggal, serta nama teknisi LAI yang bertugas melakukan pencucian dan servis berkala pada unit AC Gedung Percetakan LAI.</p>
+        <div id="tab-sudah" class="tab-content space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span class="p-2 bg-emerald-100 text-emerald-600 rounded-xl"><i class="fa-solid fa-circle-check"></i></span>
+                        Riwayat AC yang Sudah Dicuci
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Daftar AC yang telah selesai menjalani pemeliharaan dan pencucian berkala.</p>
                 </div>
-                <button onclick="openModalTambah()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 text-sm">
-                    <i class="fa-solid fa-plus text-emerald-200"></i>
-                    <span>Catat Pencucian Baru</span>
-                </button>
-            </div>
-
-            <!-- Search Riwayat -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between gap-4 items-center">
-                <div class="relative w-full md:w-96">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass text-emerald-500"></i>
-                    </span>
-                    <input type="text" id="search-selesai" onkeyup="filterSelesai()" placeholder="Cari Teknisi, Lokasi, atau Kode Aset..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-                <div class="text-xs text-slate-500 flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-info text-teal-500"></i> Menampilkan riwayat pencucian aktual oleh Teknisi LAI
+                <div class="relative w-full lg:w-auto">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
+                    <input type="text" id="searchInputSudah" onkeyup="filterSudah()" placeholder="Cari riwayat..." class="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
                 </div>
             </div>
 
-            <!-- Table Selesai -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Table Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse" id="table-selesai-ac">
+                    <table class="w-full text-left border-collapse" id="tableSudah">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
-                                <th class="py-3 px-4 font-semibold">No</th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-barcode text-emerald-500"></i> Kode Asset</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> Lokasi / Ruangan</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-calendar-day text-blue-500"></i> Hari & Tanggal Cuci</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-user-tie text-purple-500"></i> Teknisi LAI yang Bertugas</span></th>
-                                <th class="py-3 px-4 font-semibold"><span class="inline-flex items-center gap-1"><i class="fa-solid fa-clipboard-list text-amber-500"></i> Catatan Kondisi</span></th>
-                                <th class="py-3 px-4 font-semibold text-center"><span class="inline-flex items-center gap-1 justify-center"><i class="fa-solid fa-rotate text-teal-500"></i> Siklus Berikutnya</span></th>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                                <th class="p-4 text-center">No</th>
+                                <th class="p-4">Kode Asset</th>
+                                <th class="p-4">Nama Asset</th>
+                                <th class="p-4">Spesifikasi</th>
+                                <th class="p-4">Lokasi</th>
+                                <th class="p-4">Tanggal Dicuci</th>
+                                <th class="p-4">Teknisi / Petugas</th>
+                                <th class="p-4">Catatan Servis</th>
+                                <th class="p-4 text-center">Jadwal YAD</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm" id="tbody-selesai">
+                        <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-700" id="tbodySudah">
                             <!-- Populated by JS -->
                         </tbody>
                     </table>
@@ -188,62 +183,72 @@
             </div>
         </div>
 
-        <!-- TAB 3: STATISTIK & RINGKASAN -->
-        <div id="tab-stat" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
-                    <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-building text-blue-600"></i>
-                    </div>
+        <!-- TAB 3: RINGKASAN DATA STATISTIK -->
+        <div id="tab-statistik" class="tab-content space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80">
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="p-2 bg-amber-100 text-amber-600 rounded-xl"><i class="fa-solid fa-chart-pie"></i></span>
+                    Ringkasan Data Statistik Pemeliharaan AC
+                </h2>
+                <p class="text-sm text-slate-500 mt-1">Analisis visual status pencucian AC dan distribusi kapasitas PK di Gedung Percetakan LAI.</p>
+            </div>
+
+            <!-- Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 flex items-center justify-between">
                     <div>
-                        <div class="text-xs text-slate-400 font-semibold uppercase">Total Unit AC Percetakan</div>
-                        <div class="text-2xl font-bold text-slate-800" id="stat-total">34 Unit</div>
-                        <div class="text-xs text-blue-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-check-circle text-blue-500"></i> Gedung Percetakan LAI</div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Unit AC</p>
+                        <h3 class="text-3xl font-extrabold text-slate-900 mt-1" id="statTotal">34</h3>
+                        <p class="text-xs text-indigo-600 font-semibold mt-1"><i class="fa-solid fa-building"></i> Gedung Percetakan LAI</p>
+                    </div>
+                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                        <i class="fa-solid fa-snowflake"></i>
                     </div>
                 </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
-                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                    </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 flex items-center justify-between">
                     <div>
-                        <div class="text-xs text-slate-400 font-semibold uppercase">Sudah Dicuci (Periode Ini)</div>
-                        <div class="text-2xl font-bold text-slate-800" id="stat-selesai">34 Unit</div>
-                        <div class="text-xs text-emerald-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-wrench text-emerald-500"></i> Dirawat oleh Teknisi LAI</div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Sudah Dicuci</p>
+                        <h3 class="text-3xl font-extrabold text-emerald-600 mt-1" id="statSudah">0</h3>
+                        <p class="text-xs text-emerald-500 font-semibold mt-1"><i class="fa-solid fa-check-circle"></i> Sesuai Jadwal</p>
+                    </div>
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                        <i class="fa-solid fa-circle-check"></i>
                     </div>
                 </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
-                    <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl shadow-inner">
-                        <i class="fa-solid fa-clock text-amber-600"></i>
-                    </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 flex items-center justify-between">
                     <div>
-                        <div class="text-xs text-slate-400 font-semibold uppercase">Mendekati Jadwal Cuci</div>
-                        <div class="text-2xl font-bold text-slate-800" id="stat-pending">Terjadwal Aman</div>
-                        <div class="text-xs text-amber-600 mt-1 flex items-center gap-1"><i class="fa-solid fa-hourglass-half text-amber-500"></i> Durasi 6 Bulan</div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Belum / Jadwal Mendatang</p>
+                        <h3 class="text-3xl font-extrabold text-amber-600 mt-1" id="statBelum">34</h3>
+                        <p class="text-xs text-amber-500 font-semibold mt-1"><i class="fa-solid fa-clock"></i> Perlu Perawatan</p>
+                    </div>
+                    <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Tingkat Kepatuhan</p>
+                        <h3 class="text-3xl font-extrabold text-cyan-600 mt-1" id="statPersen">0%</h3>
+                        <p class="text-xs text-cyan-500 font-semibold mt-1"><i class="fa-solid fa-chart-line"></i> Tercapai</p>
+                    </div>
+                    <div class="w-14 h-14 bg-cyan-50 text-cyan-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                        <i class="fa-solid fa-percent"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
-                    <i class="fa-solid fa-circle-info text-blue-600"></i>
-                    <span>Informasi & Prosedur Pemeliharaan AC Gedung Percetakan LAI</span>
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-600">
-                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h4 class="font-semibold text-slate-800 flex items-center space-x-2">
-                            <i class="fa-solid fa-calendar-days text-blue-500"></i>
-                            <span>Aturan Durasi 6 Bulan</span>
-                        </h4>
-                        <p>Setiap unit AC dari total 34 unit di lingkungan Gedung Percetakan Lembaga Alkitab Indonesia (LAI) wajib menjalani pencucian dan pemeliharaan rutin minimal sekali setiap 6 bulan untuk menjaga performa pendinginan, efisiensi energi, dan kebersihan udara ruangan cetak.</p>
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 flex flex-col items-center">
+                    <h3 class="text-base font-bold text-slate-800 mb-4 self-start"><i class="fa-solid fa-pie-chart text-indigo-600 mr-2"></i>Status Pencucian AC</h3>
+                    <div class="w-64 h-64 sm:w-72 sm:h-72">
+                        <canvas id="statusChart"></canvas>
                     </div>
-                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h4 class="font-semibold text-slate-800 flex items-center space-x-2">
-                            <i class="fa-solid fa-user-shield text-emerald-500"></i>
-                            <span>Teknisi Internal & Catatan</span>
-                        </h4>
-                        <p>Pencucian dilakukan oleh Tim Teknisi LAI yang bertanggung jawab. Setiap selesai pencucian, tanggal pelaksanaan dan hari kerja dicatat dalam sistem untuk kalkulasi otomatis estimasi jadwal cuci 6 bulan ke depan.</p>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 flex flex-col items-center">
+                    <h3 class="text-base font-bold text-slate-800 mb-4 self-start"><i class="fa-solid fa-chart-bar text-cyan-600 mr-2"></i>Distribusi Kapasitas AC (PK)</h3>
+                    <div class="w-full h-64 sm:h-72 flex items-center justify-center">
+                        <canvas id="pkChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -251,349 +256,492 @@
 
     </main>
 
-    <!-- Modal Catat Pencucian Baru -->
-    <div id="modal-tambah" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border border-slate-100 animate-in fade-in zoom-in duration-200">
-            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-4 text-white flex justify-between items-center">
-                <h3 class="font-bold text-lg flex items-center space-x-2">
-                    <i class="fa-solid fa-file-pen text-emerald-200"></i>
-                    <span>Catat Pencucian AC Baru</span>
+    <!-- Modal Form Service / Cuci AC -->
+    <div id="modalService" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="p-2 bg-emerald-100 text-emerald-600 rounded-xl"><i class="fa-solid fa-shower"></i></span>
+                    Form Konfirmasi Cuci AC
                 </h3>
-                <button onclick="closeModalTambah()" class="text-emerald-100 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <form id="form-pencucian" onsubmit="submitPencucian(event)" class="p-6 space-y-4">
+            <form id="formCuci" onsubmit="submitCuci(event)" class="space-y-4">
+                <input type="hidden" id="modalIndex">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-snowflake text-blue-500"></i> Pilih Unit AC (Kode Asset & Lokasi)</label>
-                    <select id="input-ac-select" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        <!-- Populated by JS -->
-                    </select>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Kode & Nama Asset</label>
+                    <input type="text" id="modalInfoAsset" readonly class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tanggal Dicuci</label>
+                        <input type="date" id="modalTanggal" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Teknisi / Petugas</label>
+                        <input type="text" id="modalTeknisi" placeholder="Nama Teknisi / Vendor" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-calendar-day text-emerald-500"></i> Hari & Tanggal Pencucian</label>
-                    <input type="date" id="input-tanggal" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Catatan Servis / Perawatan</label>
+                    <textarea id="modalCatatan" rows="3" placeholder="Contoh: Cuci evaporator & kondensor, isi Freon R32 normal, kondisi dingin optimal." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"></textarea>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-user-gear text-purple-500"></i> Nama Teknisi LAI</label>
-                    <input type="text" id="input-teknisi" placeholder="Contoh: Budi Santoso / Tim Teknisi 1" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <div class="p-3 bg-cyan-50 rounded-2xl border border-cyan-100 text-xs text-cyan-800 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-cyan-600 text-base"></i>
+                    <span>Jadwal berikutnya otomatis diset <strong id="previewJadwalYAD">-</strong> (6 bulan kedepan).</span>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex items-center gap-1"><i class="fa-solid fa-comment-dots text-amber-500"></i> Catatan Kondisi AC</label>
-                    <textarea id="input-catatan" rows="3" placeholder="Contoh: Filter bersih, freon normal, evaporator dicuci bersih." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeModalTambah()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-medium flex items-center gap-1"><i class="fa-solid fa-ban text-rose-500"></i> Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium shadow-md flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk text-emerald-200"></i> Simpan Data</button>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-sm font-semibold transition-all">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i> Simpan & Perbarui Jadwal
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
-            <i class="fa-regular fa-copyright text-slate-400"></i> 2026 Lembaga Alkitab Indonesia (LAI) - Nanggewer, Bogor. Gedung Percetakan. All rights reserved.
-        </div>
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
+        <p>&copy; 2026 Lembaga Alkitab Indonesia (LAI) - Gedung Percetakan Nanggewer, Bogor. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript Data and Logic with Full AC Inventories -->
+    <!-- JavaScript Application Logic -->
     <script>
-        // WEB APP GOOGLE APPS SCRIPT URL:
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzOFJtbphA3nihm1YXvOJ9ytEDmEIQvrx3O6sluLyNkqukSD8xAidElYt5RFvU8nr8lbw/exec';
+        // URL WEB APP GOOGLE APPS SCRIPT ANDA
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV_z9UZnTWqPdhFBD3RD34bds7bXRP6l0fpO4FdY8Xn1GNgnkEcK03UPi7iwqIZmKy/exec"; 
+        const IS_CLOUD_ENABLED = true;
 
-        let acData = [];
+        function getApiUrl_() {
+            return String(APPS_SCRIPT_URL || '').trim();
+        }
 
-        // Display current formatted date
-        const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', optionsDate);
+        // Memeriksa dan memperbarui status koneksi pada header
+        async function checkApiConnection() {
+            const url = getApiUrl_();
+            const el = document.getElementById('apiStatus');
+            const dot = document.getElementById('dbPingDot');
+            const pingAnim = document.getElementById('dbPingAnimation');
 
-        // Fetch Data from Cloud or use Full AC Inventory Fallback
-        async function loadDataFromCloud() {
-            if (WEB_APP_URL === 'MASUKKAN_URL_WEB_APP_ANDA_DISINI') {
-                acData = getFullInventoryData();
-                renderTables();
+            if (!url || url === '') {
+                if (el) el.textContent = 'Tidak ada URL';
+                if (dot) { dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500'; }
+                if (pingAnim) { pingAnim.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75'; }
+                return false;
+            }
+            try {
+                const response = await fetch(url + (url.includes('?') ? '&' : '?') + 'ping=1&ts=' + Date.now(), {
+                    method: 'GET',
+                    cache: 'no-store',
+                    redirect: 'follow'
+                });
+                const data = await response.json();
+                if (data && (data.ok || data.jadwal)) {
+                    if (el) el.textContent = 'Terhubung';
+                    if (dot) { dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400'; }
+                    if (pingAnim) { pingAnim.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75'; }
+                    return true;
+                } else {
+                    throw new Error("Invalid response");
+                }
+            } catch (err) {
+                if (el) el.textContent = 'Gagal Koneksi';
+                if (dot) { dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500'; }
+                if (pingAnim) { pingAnim.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75'; }
+                return false;
+            }
+        }
+
+        // Data Cadangan (Fallback jika offline atau struktur data awal)
+        let rawData = [
+            { no: 1, kode: "05C03.0116", nama: "AC Standing", spesifikasi: "5 PK", lokasi: "Aula", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 2, kode: "05C03.0117", nama: "AC Standing", spesifikasi: "5 PK", lokasi: "Aula", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 3, kode: "05C03.0118", nama: "AC Split", spesifikasi: "1 PK", lokasi: "Perpus", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 4, kode: "05C03.0119", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Resepsionis", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 5, kode: "05C03.0120", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Resepsionis", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 6, kode: "05C03.0121", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Kabag Perencanaan Prod", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 7, kode: "05C03.0122", nama: "AC Split", spesifikasi: "0.5 PK", lokasi: "Kabag PPM", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 8, kode: "05C03.0124", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Kadep Produksi", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 9, kode: "05C03.0125", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Kadep Umum", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 10, kode: "05C03.0127", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Staf Pracetak", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 11, kode: "05C03.0131", nama: "AC Split", spesifikasi: "1 PK", lokasi: "Staf GBB", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 12, kode: "05C03.0132", nama: "AC Split", spesifikasi: "1 PK", lokasi: "QC", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 13, kode: "05C03.0133", nama: "AC Split", spesifikasi: "1 PK", lokasi: "Kabag Gudang", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 14, kode: "05C03.0134", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Kabag Pracetak", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 15, kode: "05C03.0135", nama: "AC Split", spesifikasi: "1.5 PK", lokasi: "Staf GBJ", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 16, kode: "05C03.0136", nama: "AC Split", spesifikasi: "1.5 PK", lokasi: "R. Transit", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 17, kode: "05C03.0137", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Staf Cost Accounting", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 18, kode: "05C03.0140", nama: "AC Split", spesifikasi: "1 PK", lokasi: "Repro", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 19, kode: "05C03.0141", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Repro", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 20, kode: "05C03.0142", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Repro", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 21, kode: "05C03.0143", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Repro", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 22, kode: "05C03.0216", nama: "AC Split", spesifikasi: "3/4 PK", lokasi: "Pos Satpam", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 23, kode: "05C03.0743", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Kadep Produksi", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 24, kode: "05C03.0773", nama: "AC Split", spesifikasi: "1 PK", lokasi: "Server", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 25, kode: "05C03.0775", nama: "AC Split", spesifikasi: "12 PK", lokasi: "Sentral di depan parkiran motor", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 26, kode: "05C03.0776", nama: "AC Split", spesifikasi: "10 PK", lokasi: "Ruang Area Cetak", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 27, kode: "05C03.0777", nama: "AC Split", spesifikasi: "10 PK", lokasi: "Ruang Area Cetak", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 28, kode: "05C03.0792", nama: "AC Split", spesifikasi: "2 PK", lokasi: "R. Kabag & Staf Produksi", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 29, kode: "09C03.0818", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Puspelti", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 30, kode: "09C03.0859", nama: "AC Split", spesifikasi: "1.5 PK", lokasi: "Chemikal", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 31, kode: "09C03.0860", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Depan Staf. SDM", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 32, kode: "09C03.0911", nama: "AC Split", spesifikasi: "2 PK", lokasi: "Server", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 33, kode: "09C03.0912", nama: "AC Split", spesifikasi: "12 PK", lokasi: "Ruang Area Cetak", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" },
+            { no: 34, kode: "09C03.0913", nama: "AC Split", spesifikasi: "12 PK", lokasi: "Ruang Area Cetak", terakhir: "-", jadwal: "2026-09-08", status: "Belum Dicuci" }
+        ];
+
+        let riwayatData = [];
+        let statusChartInstance = null;
+        let pkChartInstance = null;
+
+        // Ambil Data dari Google Spreadsheet Cloud
+        async function fetchDatabaseFromCloud() {
+            const isConnected = await checkApiConnection();
+            if (!IS_CLOUD_ENABLED || !isConnected) {
+                renderJadwal();
+                renderSudah();
                 return;
             }
 
             try {
-                let response = await fetch(WEB_APP_URL);
-                let result = await response.json();
-                if (result.status === 'success' && result.data && result.data.length > 0) {
-                    acData = result.data;
-                    renderTables();
-                } else {
-                    acData = getFullInventoryData();
-                    renderTables();
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                
+                if (result && result.jadwal && result.jadwal.length > 1) {
+                    let cloudData = [];
+                    for (let i = 1; i < result.jadwal.length; i++) {
+                        let row = result.jadwal[i];
+                        if (row[1]) {
+                            cloudData.push({
+                                no: row[0] || i,
+                                kode: row[1],
+                                nama: row[2],
+                                spesifikasi: row[3],
+                                lokasi: row[4],
+                                terakhir: row[5] || "-",
+                                jadwal: row[6] || "-",
+                                status: row[7] || "Belum Dicuci"
+                            });
+                        }
+                    }
+                    if (cloudData.length > 0) rawData = cloudData;
+                }
+                
+                if (result && result.riwayat && result.riwayat.length > 1) {
+                    let cloudRiwayat = [];
+                    for (let i = 1; i < result.riwayat.length; i++) {
+                        let row = result.riwayat[i];
+                        if (row[1]) {
+                            cloudRiwayat.push({
+                                kode: row[1],
+                                nama: row[2],
+                                spesifikasi: row[3],
+                                lokasi: row[4],
+                                tanggal: row[5],
+                                teknisi: row[6],
+                                catatan: row[7],
+                                jadwalYAD: row[8]
+                            });
+                        }
+                    }
+                    riwayatData = cloudRiwayat.reverse(); 
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
-                acData = getFullInventoryData();
-                renderTables();
+                console.warn("Gagal memuat data dari cloud, menggunakan data lokal cadangan.", error);
+            } finally {
+                renderJadwal();
+                renderSudah();
             }
         }
 
-        // Switch Tabs Function
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('border-blue-600', 'text-blue-600', 'border-emerald-600', 'text-emerald-600', 'border-amber-600', 'text-amber-600');
-                el.classList.add('border-transparent', 'text-slate-500');
+                el.classList.remove('bg-cyan-500', 'text-indigo-950', 'shadow-lg', 'shadow-cyan-500/30');
+                el.classList.add('text-indigo-200', 'hover:text-white', 'hover:bg-white/10');
             });
 
             document.getElementById('tab-' + tabId).classList.add('active');
             const activeBtn = document.getElementById('btn-' + tabId);
-            activeBtn.classList.remove('border-transparent', 'text-slate-500');
-            
-            if(tabId === 'jadwal') activeBtn.classList.add('border-blue-600', 'text-blue-600');
-            if(tabId === 'selesai') activeBtn.classList.add('border-emerald-600', 'text-emerald-600');
-            if(tabId === 'stat') activeBtn.classList.add('border-amber-600', 'text-amber-600');
+            activeBtn.classList.remove('text-indigo-200', 'hover:text-white', 'hover:bg-white/10');
+            activeBtn.classList.add('bg-cyan-500', 'text-indigo-950', 'shadow-lg', 'shadow-cyan-500/30');
+
+            if(tabId === 'statistik') {
+                renderCharts();
+            }
         }
 
-        // Calculate Next 6-Month Date
-        function addSixMonths(dateString) {
-            let d = new Date(dateString);
-            d.setMonth(d.getMonth() + 6);
-            return d;
-        }
-
-        // Format Date Helpers
-        function formatDateID(dateInput) {
-            let d = new Date(dateInput);
-            if (isNaN(d.getTime())) return dateInput;
-            return d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-        
-        function formatDateShort(dateInput) {
-            let d = new Date(dateInput);
-            if (isNaN(d.getTime())) return dateInput;
-            return d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
-
-        // Render Tables
-        function renderTables() {
-            renderJadwalTable(acData);
-            renderSelesaiTable(acData);
-            updateStats();
-            populateSelectAC();
-        }
-
-        function renderJadwalTable(data) {
-            const tbody = document.getElementById('tbody-jadwal');
+        function renderJadwal(data = rawData) {
+            const tbody = document.getElementById('tbodyJadwal');
             tbody.innerHTML = '';
-            
-            const today = new Date();
-
-            data.forEach((item, index) => {
-                let nextDate = addSixMonths(item.lastWash);
-                let diffTime = nextDate - today;
-                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            data.forEach((item) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-all border-b border-slate-100";
                 
-                let statusBadge = '';
-                if (diffDays <= 0) {
-                    statusBadge = `<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-triangle-exclamation text-red-500"></i><span>Lewat Jadwal</span></span>`;
-                } else if (diffDays <= 30) {
-                    statusBadge = `<span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-clock text-amber-500"></i><span>Segera (${diffDays}h lagi)</span></span>`;
-                } else {
-                    statusBadge = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold inline-flex items-center space-x-1"><i class="fa-solid fa-check text-emerald-500"></i><span>Aman</span></span>`;
-                }
+                let badgeStatus = item.status === "Sudah Dicuci" 
+                    ? `<span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-check"></i> Selesai</span>`
+                    : `<span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-clock"></i> Belum</span>`;
 
-                let row = `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="py-3 px-4 text-slate-500 font-medium">${index + 1}</td>
-                        <td class="py-3 px-4 font-mono font-bold text-blue-600">${item.code}</td>
-                        <td class="py-3 px-4 text-slate-700"><span class="font-medium text-slate-800">${item.name}</span> <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded ml-1">${item.spec}</span></td>
-                        <td class="py-3 px-4 font-medium text-slate-800">${item.location}</td>
-                        <td class="py-3 px-4 text-slate-600">${formatDateShort(item.lastWash)}</td>
-                        <td class="py-3 px-4 font-semibold text-slate-900">${formatDateShort(nextDate)}</td>
-                        <td class="py-3 px-4 text-center">${statusBadge}</td>
-                    </tr>
+                tr.innerHTML = `
+                    <td class="p-4 text-center text-slate-400 font-semibold">${item.no}</td>
+                    <td class="p-4 font-mono text-indigo-600 font-bold">${item.kode}</td>
+                    <td class="p-4 text-slate-800 font-semibold">${item.nama}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-600">${item.spesifikasi}</span></td>
+                    <td class="p-4 text-slate-600">${item.lokasi}</td>
+                    <td class="p-4 text-slate-500">${item.terakhir}</td>
+                    <td class="p-4 font-semibold text-slate-800">${item.jadwal}</td>
+                    <td class="p-4 text-center">${badgeStatus}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="openModal(${item.no})" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5 mx-auto">
+                            <i class="fa-solid fa-shower"></i> Cuci AC
+                        </button>
+                    </td>
                 `;
-                tbody.innerHTML += row;
+                tbody.appendChild(tr);
+            });
+            updateStats();
+        }
+
+        function renderSudah(data = riwayatData) {
+            const tbody = document.getElementById('tbodySudah');
+            tbody.innerHTML = '';
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">Belum ada data AC yang dicuci. Silakan lakukan aksi "Cuci AC" pada tab Jadwal.</td></tr>`;
+                return;
+            }
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-all border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-4 text-center text-slate-400 font-semibold">${index + 1}</td>
+                    <td class="p-4 font-mono text-indigo-600 font-bold">${item.kode}</td>
+                    <td class="p-4 text-slate-800 font-semibold">${item.nama}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-600">${item.spesifikasi}</span></td>
+                    <td class="p-4 text-slate-600">${item.lokasi}</td>
+                    <td class="p-4 text-emerald-600 font-semibold">${item.tanggal}</td>
+                    <td class="p-4 text-slate-800 font-semibold">${item.teknisi}</td>
+                    <td class="p-4 text-slate-600 italic">"${item.catatan}"</td>
+                    <td class="p-4 text-center font-semibold text-indigo-600">${item.jadwalYAD}</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
-        function renderSelesaiTable(data) {
-            const tbody = document.getElementById('tbody-selesai');
-            tbody.innerHTML = '';
+        // Perbaikan pada fungsi openModal (Menyamakan tipe data Number)
+        function openModal(no) {
+            const item = rawData.find(d => Number(d.no) === Number(no));
+            
+            if (!item) {
+                console.error("Data AC tidak ditemukan untuk nomor:", no);
+                return;
+            }
 
-            data.forEach((item, index) => {
-                let nextDate = addSixMonths(item.lastWash);
-                let techInitial = item.technician ? item.technician.charAt(0) : 'T';
-                let row = `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="py-3 px-4 text-slate-500 font-medium">${index + 1}</td>
-                        <td class="py-3 px-4 font-mono font-bold text-emerald-600">${item.code}</td>
-                        <td class="py-3 px-4 font-medium text-slate-800">${item.location} <span class="text-xs text-slate-400">(${item.name} - ${item.spec})</span></td>
-                        <td class="py-3 px-4 font-semibold text-slate-900">${formatDateID(item.lastWash)}</td>
-                        <td class="py-3 px-4">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
-                                    ${techInitial}
-                                </div>
-                                <span class="font-medium text-slate-700">${item.technician}</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4 text-slate-500 text-xs italic">${item.note || 'Pencucian berkala 6 bulanan'}</td>
-                        <td class="py-3 px-4 text-center">
-                            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md font-medium">
-                                ${formatDateShort(nextDate)}
-                            </span>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
+            document.getElementById('modalIndex').value = no;
+            document.getElementById('modalInfoAsset').value = `${item.kode} - ${item.nama} (${item.spesifikasi}) di ${item.lokasi}`;
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('modalTanggal').value = today;
+            document.getElementById('modalTeknisi').value = '';
+            document.getElementById('modalCatatan').value = '';
+            
+            updatePreviewYAD(today);
+            document.getElementById('modalTanggal').onchange = function(e) {
+                updatePreviewYAD(e.target.value);
+            };
+
+            document.getElementById('modalService').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modalService').classList.add('hidden');
+        }
+
+        function updatePreviewYAD(dateStr) {
+            if(!dateStr) return;
+            let d = new Date(dateStr);
+            d.setMonth(d.getMonth() + 6);
+            let yyyy = d.getFullYear();
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let dd = String(d.getDate()).padStart(2, '0');
+            document.getElementById('previewJadwalYAD').innerText = `${yyyy}-${mm}-${dd}`;
+        }
+
+        async function submitCuci(e) {
+            e.preventDefault();
+            const no = parseInt(document.getElementById('modalIndex').value);
+            const tanggal = document.getElementById('modalTanggal').value;
+            const teknisi = document.getElementById('modalTeknisi').value;
+            const catatan = document.getElementById('modalCatatan').value;
+
+            let d = new Date(tanggal);
+            d.setMonth(d.getMonth() + 6);
+            let yyyy = d.getFullYear();
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let dd = String(d.getDate()).padStart(2, '0');
+            let jadwalYAD = `${yyyy}-${mm}-${dd}`;
+
+            const item = rawData.find(d => Number(d.no) === Number(no));
+
+            if(IS_CLOUD_ENABLED && APPS_SCRIPT_URL) {
+                try {
+                    await fetch(APPS_SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({
+                            action: "updateJadwal",
+                            kode: item.kode,
+                            nama: item.nama,
+                            spesifikasi: item.spesifikasi,
+                            lokasi: item.lokasi,
+                            terakhir: tanggal,
+                            teknisi: teknisi,
+                            catatan: catatan || "Pencucian rutin 6 bulanan selesai.",
+                            jadwalBerikutnya: jadwalYAD
+                        })
+                    });
+                } catch(err) {
+                    console.error("Gagal sinkronisasi cloud:", err);
+                }
+            }
+
+            const itemIndex = rawData.findIndex(d => Number(d.no) === Number(no));
+            if(itemIndex !== -1) {
+                rawData[itemIndex].terakhir = tanggal;
+                rawData[itemIndex].jadwal = jadwalYAD;
+                rawData[itemIndex].status = "Sudah Dicuci";
+
+                riwayatData.unshift({
+                    kode: rawData[itemIndex].kode,
+                    nama: rawData[itemIndex].nama,
+                    spesifikasi: rawData[itemIndex].spesifikasi,
+                    lokasi: rawData[itemIndex].lokasi,
+                    tanggal: tanggal,
+                    teknisi: teknisi,
+                    catatan: catatan || "Pencucian rutin 6 bulanan selesai.",
+                    jadwalYAD: jadwalYAD
+                });
+            }
+
+            closeModal();
+            renderJadwal();
+            renderSudah();
+            alert("Data pencucian AC berhasil diperbarui!");
+        }
+
+        function filterJadwal() {
+            const query = document.getElementById('searchInputJadwal').value.toLowerCase();
+            const filtered = rawData.filter(item => 
+                item.kode.toLowerCase().includes(query) ||
+                item.nama.toLowerCase().includes(query) ||
+                item.lokasi.toLowerCase().includes(query) ||
+                item.spesifikasi.toLowerCase().includes(query)
+            );
+            renderJadwal(filtered);
+        }
+
+        function filterSudah() {
+            const query = document.getElementById('searchInputSudah').value.toLowerCase();
+            const filtered = riwayatData.filter(item => 
+                item.kode.toLowerCase().includes(query) ||
+                item.nama.toLowerCase().includes(query) ||
+                item.lokasi.toLowerCase().includes(query) ||
+                item.teknisi.toLowerCase().includes(query)
+            );
+            renderSudah(filtered);
         }
 
         function updateStats() {
-            document.getElementById('stat-total').innerText = acData.length + " Unit";
-            document.getElementById('total-ac-count').innerText = acData.length;
-            document.getElementById('stat-selesai').innerText = acData.length + " Unit";
-            document.getElementById('stat-pending').innerText = "Terjadwal Aman";
+            const total = rawData.length;
+            const sudah = rawData.filter(d => d.status === "Sudah Dicuci").length;
+            const belum = total - sudah;
+            const persen = total > 0 ? Math.round((sudah / total) * 100) : 0;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statSudah').innerText = sudah;
+            document.getElementById('statBelum').innerText = belum;
+            document.getElementById('statPersen').innerText = persen + '%';
         }
 
-        function populateSelectAC() {
-            const select = document.getElementById('input-ac-select');
-            select.innerHTML = '';
-            acData.forEach(item => {
-                let opt = document.createElement('option');
-                opt.value = item.code;
-                opt.textContent = `${item.code} - ${item.location} (${item.name} ${item.spec})`;
-                select.appendChild(opt);
-            });
-        }
+        function renderCharts() {
+            const total = rawData.length;
+            const sudah = rawData.filter(d => d.status === "Sudah Dicuci").length;
+            const belum = total - sudah;
 
-        // Filter functions
-        function filterJadwal() {
-            let query = document.getElementById('search-jadwal').value.toLowerCase();
-            let filtered = acData.filter(item => {
-                return item.code.toLowerCase().includes(query) || 
-                       item.location.toLowerCase().includes(query) ||
-                       item.name.toLowerCase().includes(query) ||
-                       item.spec.toLowerCase().includes(query);
-            });
-            renderJadwalTable(filtered);
-        }
-
-        function filterSelesai() {
-            let query = document.getElementById('search-selesai').value.toLowerCase();
-            let filtered = acData.filter(item => {
-                return item.code.toLowerCase().includes(query) || 
-                       item.location.toLowerCase().includes(query) || 
-                       item.technician.toLowerCase().includes(query);
-            });
-            renderSelesaiTable(filtered);
-        }
-
-        // Modal Controls
-        function openModalTambah() {
-            document.getElementById('modal-tambah').classList.remove('hidden');
-            document.getElementById('input-tanggal').valueAsDate = new Date();
-        }
-
-        function closeModalTambah() {
-            document.getElementById('modal-tambah').classList.add('hidden');
-        }
-
-        // Submit Form Pencucian Baru ke Google Sheets
-        async function submitPencucian(e) {
-            e.preventDefault();
-            let code = document.getElementById('input-ac-select').value;
-            let tanggal = document.getElementById('input-tanggal').value;
-            let teknisi = document.getElementById('input-teknisi').value;
-            let catatan = document.getElementById('input-catatan').value;
-
-            let payload = {
-                code: code,
-                lastWash: tanggal,
-                technician: teknisi,
-                note: catatan
-            };
-
-            let foundItem = acData.find(a => a.code === code);
-            if (foundItem) {
-                payload.location = foundItem.location;
-                payload.name = foundItem.name;
-                payload.spec = foundItem.spec;
-            }
-
-            let submitBtn = e.target.querySelector('button[type="submit"]');
-            let originalText = submitBtn.innerText;
-            submitBtn.innerText = "Menyimpan ke Cloud...";
-            submitBtn.disabled = true;
-
-            try {
-                if (WEB_APP_URL !== 'MASUKKAN_URL_WEB_APP_ANDA_DISINI') {
-                    await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            if(statusChartInstance) statusChartInstance.destroy();
+            statusChartInstance = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sudah Dicuci', 'Belum / Jadwal Mendatang'],
+                    datasets: [{
+                        data: [sudah, belum],
+                        backgroundColor: ['#10b981', '#f59e0b'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', weight: '600' } } }
+                    }
                 }
+            });
 
-                if(foundItem) {
-                    foundItem.lastWash = tanggal;
-                    foundItem.technician = teknisi;
-                    foundItem.note = catatan;
+            const pkCounts = {};
+            rawData.forEach(item => {
+                pkCounts[item.spesifikasi] = (pkCounts[item.spesifikasi] || 0) + 1;
+            });
+
+            const ctxPk = document.getElementById('pkChart').getContext('2d');
+            if(pkChartInstance) pkChartInstance.destroy();
+            pkChartInstance = new Chart(ctxPk, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(pkCounts),
+                    datasets: [{
+                        label: 'Jumlah Unit AC',
+                        data: Object.values(pkCounts),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
+                    }
                 }
-
-                alert('Data pencucian berhasil dicatat dan disinkronkan!');
-                closeModalTambah();
-                renderTables();
-                switchTab('selesai');
-
-            } catch (error) {
-                console.error('Gagal menyimpan:', error);
-                alert('Terjadi kesalahan saat menyimpan data.');
-            } finally {
-                submitBtn.innerText = originalText;
-                submitBtn.disabled = false;
-            }
+            });
         }
 
-        // Full AC Inventory Data from DATA AC Terpasang.xlsx (34 Units)
-        function getFullInventoryData() {
-            return [
-                { no: 1, code: "05C03.0116", name: "AC Standing", spec: "5 PK", location: "Aula", lastWash: "2025-11-10", technician: "Budi Santoso", note: "Pendinginan optimal" },
-                { no: 2, code: "05C03.0117", name: "AC Standing", spec: "5 PK", location: "Aula", lastWash: "2025-11-12", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 3, code: "05C03.0118", name: "AC Split", spec: "1 PK", location: "Perpus", lastWash: "2025-08-15", technician: "Budi Santoso", note: "Filter dibersihkan" },
-                { no: 4, code: "05C03.0119", name: "AC Split", spec: "2 PK", location: "Resepsionis", lastWash: "2025-09-01", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 5, code: "05C03.0120", name: "AC Split", spec: "2 PK", location: "Resepsionis", lastWash: "2025-09-02", technician: "Budi Santoso", note: "Normal" },
-                { no: 6, code: "05C03.0121", name: "AC Split", spec: "2 PK", location: "Kabag Perencanaan Prod", lastWash: "2025-10-05", technician: "Tim Teknisi 1", note: "Baik" },
-                { no: 7, code: "05C03.0122", name: "AC Split", spec: "0.5 PK", location: "Kabag PPM", lastWash: "2025-10-10", technician: "Ahmad Jaelani", note: "Baik" },
-                { no: 8, code: "05C03.0124", name: "AC Split", spec: "2 PK", location: "Kadep Produksi", lastWash: "2025-07-20", technician: "Budi Santoso", note: "Normal" },
-                { no: 9, code: "05C03.0125", name: "AC Split", spec: "2 PK", location: "Kadep Umum", lastWash: "2025-08-11", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 10, code: "05C03.0127", name: "AC Split", spec: "2 PK", location: "Staf Pracetak", lastWash: "2025-09-14", technician: "Budi Santoso", note: "Baik" },
-                { no: 11, code: "05C03.0131", name: "AC Split", spec: "1 PK", location: "Staf GBB", lastWash: "2025-08-25", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 12, code: "05C03.0132", name: "AC Split", spec: "1 PK", location: "QC", lastWash: "2025-10-01", technician: "Budi Santoso", note: "Normal" },
-                { no: 13, code: "05C03.0133", name: "AC Split", spec: "1 PK", location: "Kabag Gudang", lastWash: "2025-09-18", technician: "Ahmad Jaelani", note: "Baik" },
-                { no: 14, code: "05C03.0134", name: "AC Split", spec: "2 PK", location: "Kabag Pracetak", lastWash: "2025-07-30", technician: "Budi Santoso", note: "Normal" },
-                { no: 15, code: "05C03.0135", name: "AC Split", spec: "1.5 PK", location: "Staf GBJ", lastWash: "2025-08-12", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 16, code: "05C03.0136", name: "AC", spec: "1.5 PK", location: "R. Transit", lastWash: "2025-09-22", technician: "Budi Santoso", note: "Baik" },
-                { no: 17, code: "05C03.0137", name: "AC", spec: "2 PK", location: "Staf Cost Accounting", lastWash: "2025-10-15", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 18, code: "05C03.0140", name: "AC", spec: "1 PK", location: "Repro", lastWash: "2025-08-05", technician: "Budi Santoso", note: "Baik" },
-                { no: 19, code: "05C03.0141", name: "AC", spec: "2 PK", location: "Repro", lastWash: "2025-08-06", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 20, code: "05C03.0142", name: "AC", spec: "2 PK", location: "Repro", lastWash: "2025-08-07", technician: "Budi Santoso", note: "Normal" },
-                { no: 21, code: "05C03.0143", name: "AC", spec: "2 PK", location: "Repro", lastWash: "2025-08-08", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 22, code: "05C03.0216", name: "AC", spec: "3/4 PK", location: "Pos Satpam", lastWash: "2025-11-01", technician: "Budi Santoso", note: "Normal" },
-                { no: 23, code: "05C03.0743", name: "AC", spec: "2 PK", location: "Kadep Produksi", lastWash: "2025-09-11", technician: "Ahmad Jaelani", note: "Baik" },
-                { no: 24, code: "05C03.0773", name: "AC", spec: "1 PK", location: "Server", lastWash: "2025-10-20", technician: "Tim Teknisi 1", note: "Suhu server stabil" },
-                { no: 25, code: "05C03.0775", name: "AC", spec: "12 PK", location: "Sentral di depan parkiran motor", lastWash: "2025-07-15", technician: "Tim Teknisi 2", note: "Sentral dicek menyeluruh" },
-                { no: 26, code: "05C03.0776", name: "AC", spec: "10 PK", location: "Ruang Area Cetak", lastWash: "2025-08-19", technician: "Tim Teknisi 2", note: "Area produksi cetak" },
-                { no: 27, code: "05C03.0777", name: "AC", spec: "10 PK", location: "Ruang Area Cetak", lastWash: "2025-08-20", technician: "Tim Teknisi 2", note: "Area produksi cetak" },
-                { no: 28, code: "05C03.0792", name: "AC", spec: "2 PK", location: "R. Kabag & Staf Produksi", lastWash: "2025-09-25", technician: "Budi Santoso", note: "Normal" },
-                { no: 29, code: "09C03.0818", name: "AC", spec: "2 PK", location: "Puspelti", lastWash: "2025-10-02", technician: "Ahmad Jaelani", note: "Normal" },
-                { no: 30, code: "09C03.0859", name: "AC", spec: "1.5 PK", location: "Chemikal", lastWash: "2025-08-14", technician: "Budi Santoso", note: "Normal" },
-                { no: 31, code: "09C03.0860", name: "AC", spec: "2 PK", location: "Depan Staf. SDM", lastWash: "2025-09-09", technician: "Ahmad Jaelani", note: "Baik" },
-                { no: 32, code: "09C03.0911", name: "AC", spec: "2 PK", location: "Server", lastWash: "2025-10-21", technician: "Tim Teknisi 1", note: "Normal" },
-                { no: 33, code: "09C03.0912", name: "AC", spec: "12 PK", location: "Ruang Area Cetak", lastWash: "2025-08-21", technician: "Tim Teknisi 2", note: "Area produksi cetak" },
-                { no: 34, code: "09C03.0913", name: "AC", spec: "12 PK", location: "Ruang Area Cetak", lastWash: "2025-08-22", technician: "Tim Teknisi 2", location_note: "Area produksi cetak", technician: "Tim Teknisi 2", note: "Area produksi cetak" }
-            ];
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,No,Kode Asset,Nama Asset,Spesifikasi,Lokasi,Terakhir Cuci,Jadwal Berikutnya,Status\r\n";
+            rawData.forEach(row => {
+                csvContent += `${row.no},${row.kode},"${row.nama}","${row.spesifikasi}","${row.lokasi}",${row.terakhir},${row.jadwal},${row.status}\r\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Jadwal_Service_AC_Gedung_LAI.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        // Initial Render on Load
         window.onload = function() {
-            loadDataFromCloud();
+            fetchDatabaseFromCloud();
         };
     </script>
 </body>
